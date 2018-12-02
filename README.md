@@ -12,4 +12,5 @@ LICENSING
 ==========
 Multiple licenses may be used in this repository. Always look at the relevent COPYING file. The various licenses are listed below.
 
-- Dissonant Documentation Freedom License version 1
+- Dissonant Documentation Freedom License version 1 (DDFL1)
+- GNU General Public License version 3 (GPL3)
