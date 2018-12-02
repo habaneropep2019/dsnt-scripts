@@ -1,0 +1,55 @@
+(C) Copyright 2018 Alec Bloss. All rights reserved.
+
+This documentation is released under the Dissonant Documentation Freedom License version 1, or any later version.
+
+See COPYING for more information.
+
+=========================================
+
+Dissonant's package management system has been designed to be simple and flexible.
+
+As part of that, a flags file is included in all packages.
+
+The flags file is intended to raise issues to the package system.
+
+There are many flags that can be set, and many more will be added.
+
+This list will be updated as flags are added to the standard.
+
+Each flag has a minimum Dissonant Application Image API version (DAIAPI)
+
+Each flag must be 12 characters long. Only numbers and letters are allowed.
+
+
+VALUE		DESCRIPTION				MIN_DAIAPI
+=============== ======================================= ===========
+01000000001D	Devel package flag - prevent install
+		 on production or release system	01
+
+010000000020	Deprecated package flag (RARE)(WARN)	01
+
+010000000030	Release package flag			01
+
+010000000040	Official Dissonant Package (CHECKSIG)	01
+
+010000000050	Package requires DAIAPI 01 (CURRENT)	01
+
+010000000150	Package requires DAIAPI 02 (FUTURE)	01
+
+010000000250	Package requires DAIAPI 03 (FUTURE)	01
+
+010000000350	Package requires DAIAPI 04 (FUTURE)	01
+
+010000000060	Force integrity verification		02
+
+010000000160	Force online integrity verification	02
+
+010000000260	Force online signature verification	02
+
+010000000070	Post-install action - create symlinks	01
+
+010000000080	Post-install action (FUTURE)(UNDEFINED)	--
+
+010000000090	Post-install action (FUTURE)(UNDEFINED)	--
+
+01A000000010	Set dummy/transitional flag		02
