@@ -133,6 +133,14 @@ fi
 	
 sleep 2s
 
+if [ ! -a "$HOME/dsnt-tree/tempchain.conf" ]
+	then
+	echo "Tempchain configuration missing, fetching current example."
+	echo "BE SURE TO EDIT THIS CONFIGURATION FILE OR YOUR BUILD WILL FAIL"
+	sleep 2s
+	wget https://raw.githubusercontent.com/binaryblob01/dsnt-scripts/master/dsnt-tchainbuild/tempchain.conf
+fi
+
 
 cd $HOME/dsnt-tree
 
