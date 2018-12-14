@@ -95,9 +95,46 @@ fi
 	
 sleep 1s
 
+echo "Checking for working directory..."
+
+cd $HOME
+
+if [ -d "dsnt-working" ]
+	then
+		echo "... OK"
+	else
+		echo "Dissonant working directory not found, creating working directory"
+		mkdir -v dsnt-working
+		echo "Dissonant working directory created"
+fi
+	
+sleep 1s
+
 dbk
 
-cd dsnt-tree
+cd $HOME/dsnt-working
+
+if [ -d "$dsnt_build_ID" ]
+	then
+		echo "Dissonant working directory for build $dsnt_build_ID"
+		echo "already exists. Aborting."
+		echo " If you wish to re-build this build, please rename or"
+		echo "delete this build ID."
+		echo "If you plan to rename, please use a dash after the build ID"
+		echo "and then whatever you wish to use, so as not to cause conflicts"
+		echo "with the build system."
+		echo "For example 1-old or 1-12012018"
+		exit 1
+	else
+		echo "Working build directory does not exist."
+		mkdir -v $dsnt_build_ID
+		echo "Working build directory created succesfully."
+fi
+	
+sleep 2s
+
+
+cd $HOME/dsnt-tree
 
 if [ -d "$dsnt_build_ID" ]
 	then
@@ -105,11 +142,15 @@ if [ -d "$dsnt_build_ID" ]
 		echo "already exists. Aborting."
 		echo " If you wish to re-create this tree, please rename or"
 		echo "delete this build."
+		echo "If you plan to rename, please use a dash after the build ID"
+		echo "and then whatever you wish to use, so as not to cause conflicts"
+		echo "with the build system."
+		echo "For example 1-old or 1-12012018"
 		exit 1
 	else
-		echo "Build directory does not exist."
+		echo "Tree build directory does not exist."
 		mkdir -v $dsnt_build_ID
-		echo "Build directory created succesfully."
+		echo "Tree build directory created succesfully."
 fi
 	
 sleep 2s
