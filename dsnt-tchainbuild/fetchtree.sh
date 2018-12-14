@@ -149,7 +149,7 @@ wget `echo $DSRCURL`/elfutils-0.173.tar.bz2
 wget `echo $DSRCURL`/expat-2.2.6.tar.bz2
 wget `echo $DSRCURL`/expect5.45.4.tar.gz
 wget `echo $DSRCURL`/file-5.34.tar.gz
-wget `echo $DSRCURL`/findutils/findutils-4.6.0.tar.gz
+wget `echo $DSRCURL`/findutils-4.6.0.tar.gz
 wget `echo $DSRCURL`/flex-2.6.4.tar.gz
 wget `echo $DSRCURL`/gawk-4.2.1.tar.xz
 wget `echo $DSRCURL`/gcc-8.2.0.tar.xz
@@ -163,6 +163,7 @@ wget `echo $DSRCURL`/groff-1.22.3.tar.gz
 wget `echo $DSRCURL`/grub-2.02.tar.xz
 wget `echo $DSRCURL`/gzip-1.9.tar.xz
 wget `echo $DSRCURL`/iana-etc-2.30.tar.bz2
+wget `echo $DSRCURL`/inetutils-1.9.4.tar.xz
 wget `echo $DSRCURL`/intltool-0.51.0.tar.gz
 wget `echo $DSRCURL`/iproute2-4.18.0.tar.xz
 wget `echo $DSRCURL`/kbd-2.0.4.tar.xz
@@ -194,7 +195,7 @@ wget `echo $DSRCURL`/readline-7.0.tar.gz
 wget `echo $DSRCURL`/sed-4.5.tar.xz
 wget `echo $DSRCURL`/shadow-4.6.tar.xz
 wget `echo $DSRCURL`/sysklogd-1.5.1.tar.gz
-# wget `echo $DSRCURL`/sysvinit-2.90.tar.xz
+# wget `echo $DSRCURL`/sysvinit-2.90.tar.xz # Reserved ONLY for Dissonant-Hertz systems!
 wget `echo $DSRCURL`/tar-1.30.tar.xz
 wget `echo $DSRCURL`/tcl8.6.8-src.tar.gz
 wget `echo $DSRCURL`/texinfo-6.5.tar.xz
