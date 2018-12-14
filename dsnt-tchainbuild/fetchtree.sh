@@ -84,7 +84,7 @@ echo "Checking for tree directory..."
 
 cd $HOME
 
-[ if -d "dsnt-tree" ]
+if [ -d "dsnt-tree" ]
 	then
 		echo "... OK"
 	else
@@ -99,7 +99,7 @@ dbk
 
 cd dsnt-tree
 
-[ if -d "$dsnt_build_ID" ]
+if [ -d "$dsnt_build_ID" ]
 	then
 		echo "Dissonant build tree for build $dsnt_build_ID"
 		echo "already exists. Aborting."
