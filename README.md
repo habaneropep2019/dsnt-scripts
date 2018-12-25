@@ -10,7 +10,8 @@ usage of a command.
 
 LICENSING
 ==========
-Multiple licenses may be used in this repository. Always look at the relevent COPYING file. The various licenses are listed below.
+Different licenses may be used in this repository, and some pieces may be multi-licensed (made available under more than one license). Always look at the relevent COPYING file. The various licenses are listed below.
 
 - Dissonant Documentation Freedom License version 1 (DDFL1)
+- Dissonant Software Freedom License version 1 (DSFL1)
 - GNU General Public License version 3 (GPL3)
