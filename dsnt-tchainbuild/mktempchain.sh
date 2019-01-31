@@ -60,7 +60,7 @@ mktempchain_release="1"
 
 ##INCLUDES##
 
-source liblog.sh # Assuming liblog is available in '.' as this script will be used on systems that don't have liblog
+source $HOME/dsnt-tree/liblog.sh # Assuming liblog is available in '$HOME/dsnt-tree/' as this script will be used on systems that don't have liblog
 
 # Load tempchain configuration options from tempchain.conf
 
