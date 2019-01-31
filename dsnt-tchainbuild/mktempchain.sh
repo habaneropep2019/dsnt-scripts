@@ -58,6 +58,10 @@
 
 mktempchain_release="1"
 
+##INCLUDES##
+
+source liblog.sh # Assuming liblog is available in '.' as this script will be used on systems that don't have liblog
+
 # Load tempchain configuration options from tempchain.conf
 
 source $HOME/dsnt-tree/tempchain.conf
@@ -79,6 +83,7 @@ function dsp_clear {
 function dbk {
         echo ""
 }
+
 
 
 # Clear the screen and display an information message
@@ -141,31 +146,32 @@ mkdir -v .status
 ##status
 touch .status/directory-struct
 ##
-touch logs/mktempchain.log
+
+# Initialize the log
+
+aINITLOG "$HOME/dsnt-working/$DSNTBUILDID/logs/mktempchain.log" "mktempchain.log" "mktempchain" "$DSNTBUILDID"
 
 dbk
 echo "Logging enabled."
-##log
-echo "mktempchain.log" >> logs/mktempchain.log
-echo "-------------------" >> logs/mktempchain.log
-echo "Dissonant mktempchain release $mktempchain_release" >> log/mktempchain.log
-echo "Tempchain configuration:" >> log/mktempchain.log
-echo "Selected Dissonant build ID: $DSNTBUILDID" >> log/mktempchain.log
-echo "CPU Threads setting: $THREADSAVAIL" >> log/mktempchain.log
-echo "Log initialization timestamp: `date +%Y%m%d_%H%M%S%Z`" >> log/mktempchain.log
-echo "Detected host system kernel: `uname -a`" >> log/mktempchain.log
-echo "============================BEGIN LOG============================" >> log/mktempchain.log
-echo "`date +%Y%m%d_%H%M%S%Z` Logging enabled" >> log/mktempchain.log
-##
+
+aLOGMSG "mktempchain.log"
+aLOGMSG "-------------------"
+aLOGMSG "Dissonant mktempchain release $mktempchain_release"
+aLOGMSG "Tempchain configuration:"
+aLOGMSG "Selected Dissonant build ID: $DSNTBUILDID"
+aLOGMSG "CPU Threads setting: $THREADSAVAIL"
+aLOGMSG "Log initialization timestamp: `date +%Y%m%d_%H%M%S%Z`"
+aLOGMSG "Detected host system kernel: `uname -a`"
+aLOGMSG "-------------------"
 
 ##status
 touch .status/enable_logging
 ##
 sleep 1s
 echo "Directory structure created."
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Directory structure created" >> log/mktempchain.log
-##endlog
+
+aLOGMSG "Directory structure created"
+
 
 sleep 1s
 
@@ -193,23 +199,23 @@ echo "Creating disk image, this may take a while..."
 dbk
 
 cd $HOME/dsnt-working/$DSNTBUILDID/disk
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Starting disk image creation" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Starting disk image creation"
+
 dd if=/dev/zero of=root.img bs=1024k count=15360 2>&1 | tee $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Finished creating disk image" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Finished creating disk image"
+
 ##status
 touch $HOME/dsnt-working/$DSNTBUILDID/.status/create_diskimage
 ##
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Creating filesystem on disk image" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Creating filesystem on disk image" 
+
 /usr/sbin/mkfs.ext4 root.img 2>&1 | tee $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Finished creating filesystem on disk image" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Finished creating filesystem on disk image" 
+
 ##status
 touch $HOME/dsnt-working/$DSNTBUILDID/.status/create_fs_diskimage
 ##
@@ -229,9 +235,9 @@ echo "Adding configuration details to tempchain.conf..."
 echo "DISKIMGLOC=\"\$HOME/dsnt-working/\$DSNTBUILDID/disk/root.img\"" >> $HOME/dsnt-tree/tempchain.conf
 echo "DISKIMGMNTLOC=\"\$HOME/dsnt-working/\$DSNTBUILDID/disk/mnt\"" >> $HOME/dsnt-tree/tempchain.conf
 echo "DSNTWORKINGROOT=\"\$HOME/dsnt-working/\$DSNTBUILDID\"" >> $HOME/dsnt-tree/tempchain.conf
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Added additional configuration details to tempchain.conf" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Added additional configuration details to tempchain.conf" 
+
 ##status
 touch $HOME/dsnt-working/$DSNTBUILDID/.status/add_diskimg_to_config
 touch $HOME/dsnt-working/$DSNTBUILDID/.status/add_dsntworkingroot_to_config
@@ -241,9 +247,9 @@ dbk
 
 echo "Creating mount point for diskimage..."
 mkdir $HOME/dsnt-working/$DSNTBUILDID/disk/mnt
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Created mount point for diskimage" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Created mount point for diskimage" 
+
 ##status
 touch $HOME/dsnt-working/$DSNTBUILDID/.status/create_diskimage_mnt
 ##
@@ -281,27 +287,28 @@ echo "and that it has completed successfully\?"
 echo "If not, please do so before continuing."
 read -p "Press any key to continue."
 
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Attempting to mount the diskimage as a normal user" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Attempting to mount the diskimage as a normal user" 
+
 
 echo "Attempting to mount the diskimage, please wait..."
+## IMPORTANT! NEED TO UPDATE THIS TO OUTPUT TO LOG!!
 mount -v $HOME/dsnt-working/$DSNTBUILDID/disk/mnt 2>&1 | tee $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
 echo "Checking for successful mount..."
 
 if [ ! -d "$HOME/dsnt-working/$DSNTBUILDID/disk/mnt/lost+found" ] # <<Change this to a created directory
 	then
 		echo "Diskimage mount as normal user failed."
-		##log
-		echo "`date +%Y%m%d_%H%M%S%Z` Diskimage mount as normal user failed. See log lines above." >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-		##endlog
+		
+		echo "`date +%Y%m%d_%H%M%S%Z` Diskimage mount as normal user failed. See log lines above." 
+		
 		exit 1
 fi
 
 echo "Mount appears to be successful."
-##log
-echo "`date +%Y%m%d_%H%M%S%Z` Mounted diskimage as a normal user successfully" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
-##endlog
+
+aLOGMSG "Mounted diskimage as a normal user successfully" 
+
 ##status
 touch $HOME/dsnt-working/$DSNTBUILDID/.status/mount_diskimage_normal_user_success
 ##
