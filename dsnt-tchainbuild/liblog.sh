@@ -64,6 +64,11 @@ function aINITLOG{
 	aINITMSG=`echo $4`
 	aDSNTBLDID=`echo $5`
 	
+	if [ ! -f "$aLOGPATH" ]
+		then
+			touch $aLOGPATH
+	fi
+	
 	echo "$aLOGNAME" >> $aLOGPATH
 	echo "-------------------" >> $aLOGPATH
 	#echo "$aINITMSG" >> $aLOGPATH
@@ -76,7 +81,7 @@ function aLOGMSG{
 	
 	aLOGMSG=`echo $1`
 	
-	echo "`date +%Y%m%d_%H%M%S%Z`" >> $aLOGPATH
+	echo "`date +%Y%m%d_%H%M%S%Z` $aLOGMSG" >> $aLOGPATH
 	
 
 }	
