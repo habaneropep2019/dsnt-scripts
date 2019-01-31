@@ -51,6 +51,30 @@ echo "`date +%Y%m%d_%H%M%S%Z` Created fstab entry for diskimage" >> $DSNTWORKING
 touch $DSNTWORKINGROOT/.status/create_diskimage_mnt
 ##
 
+echo "Mounting diskimage to create initial structure..."
+mount -v $DISKIMGMNTLOC 2>&1 | tee $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
+echo "Checking for successful mount, please wait..."
+
+if [ ! -d "$DISKIMGMNTLOC/lost+found ]
+then
+	##log
+	echo "`date +%Y%m%d_%H%M%S%Z` Attempting to mount the diskimage as root" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
+	##endlog
+	echo "Diskimage mount as root failed. Please check the log."
+	exit 1
+fi
+
+echo "Mount as root appears to be successful."
+##log
+echo "`date +%Y%m%d_%H%M%S%Z` Mounted diskimage as root successfully" >> $HOME/dsnt-working/$DSNTBUILDID/log/mktempchain.log
+##endlog
+##status
+touch $HOME/dsnt-working/$DSNTBUILDID/.status/mount_diskimage_root_success
+##
+
+# ¬! We need to create the directories on the diskimage as root and set permissions correctly.
+
+
 echo "Root procedures finished, please go back to the other terminal."
 
 exit 0
