@@ -79,6 +79,11 @@ function dbsstart {
 	touch "$HOME/dsnt-working/.lock"
 	echo "Creating temporary resources..."
 	mkdir /tmp/dbs.$$
+	if [ ! -f "$HOME/dsnt-tree/dbs.conf" ]
+	then
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Important<<" --msgbox "No configuration found, please choose Configure from the main menu to create a configuration." 8 75	fi
+	fi
+	source "$HOME/dsnt-tree/dbs.conf"
 }
 
 function daboutmsg {
@@ -146,6 +151,49 @@ function dnewmenu {
 		dbsmain
 	fi
 }
+
+function dconfigmenu {
+	if [ ! -f "$HOME/dsnt-tree/dbs.conf" ]
+	then
+		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>WARNING<<" --infobox "No configuration found, creating..." 7 35
+		sleep 2s
+		touch "$HOME/dsnt-tree/dbs.conf"
+		echo "#This is the Dissonant Build System configuration file. Most values expect a binary value, AKA" "$HOME/dsnt-tree/dbs.conf" >> "$HOME/dsnt-tree/dbs.conf"
+		echo "#1 for No or False, and 0 for Yes or True." "$HOME/dsnt-tree/dbs.conf" >> "$HOME/dsnt-tree/dbs.conf"
+		echo "" >> "$HOME/dsnt-tree/dbs.conf"
+		echo "# By default, DBS defaults to 1 thread available." >> "$HOME/dsnt-tree/dbs.conf"
+		echo "THREADS=1" >> "$HOME/dsnt-tree/dbs.conf"
+		echo "LOGGING=0" >> "$HOME/dsnt-tree/dbs.conf"
+	fi
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Current Configuration<<" --yesno "Below you will find the current configuration.\n\nIf this is satisfactory, you can select \"No\" to go back to the main menu.\nOtherwise, select \"Yes\" to edit the configuration.\n\n\n`cat $HOME/dsnt-tree/dbs.conf`" 25 80
+	CHOICE=$?
+	if [ $CHOICE = 1 ]
+	then
+		dbsmain
+	fi
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Logging<<" --yesno "Enable logging?" 7 20
+	DBSCONFIGLOGGING=$?
+	DBSCONFIGTHREADS=$(whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>CPU Threads<<" --inputbox "How many CPU threads do you want the build system to utilize?\nMore threads enables faster compiling.\n\nIf your processor supports hyperthreading, you can use two threads per core. For example, if you have a dual-core CPU that supports hyperthreading, you can enable up to four threads. If you intend to use your computer while the build is running, it is recommended to only enable half of the available threads.\n\nIt is important to note that not all packages can compile with multiple threads, so setting this option does not force the use of parallel compilation.\n\nThe value of this option must be a numerical value, with a minimum of 1.\n\nTo return to the main menu, choose Cancel\n\n\n\n" 25 100 3>&1 1>&2 2>&3)
+	CHOICE=$?
+	if [ $CHOICE = 1 ]
+	then
+		dbsmain
+	fi
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Updating configuration<<" --infobox "Updating configuration, please wait..." 7 45
+	rm "$HOME/dsnt-tree/dbs.conf.old" > /dev/null
+	mv "$HOME/dsnt-tree/dbs.conf" "$HOME/dsnt-tree/dbs.conf.old"
+	touch "$HOME/dsnt-tree/dbs.conf"
+	echo "#This is the Dissonant Build System configuration file. Most values expect a binary value, AKA" "$HOME/dsnt-tree/dbs.conf" >> "$HOME/dsnt-tree/dbs.conf"
+	echo "#0 for No or False, and 1 for Yes or True." "$HOME/dsnt-tree/dbs.conf" >> "$HOME/dsnt-tree/dbs.conf"
+	echo "" >> "$HOME/dsnt-tree/dbs.conf"
+	echo "# By default, DBS defaults to 1 thread available." >> "$HOME/dsnt-tree/dbs.conf"
+	echo "THREADS=$DBSCONFIGTHREADS" >> "$HOME/dsnt-tree/dbs.conf"
+	echo "LOGGING=$DBSCONFIGLOGGING" >> "$HOME/dsnt-tree/dbs.conf"
+	sleep 2s
+	dbsmain
+	
+}
+
 
 function dupdatemenu {
 	if [ ! -d "$HOME/dsnt-tree" ]
@@ -335,7 +383,7 @@ function dbsmain {
 			dnewmenu
 			;;
 		Configure)
-			dconfigopt
+			dconfigmenu
 			;;
 		Update)
 			dupdatemenu
@@ -359,6 +407,35 @@ function dbsmain {
 ## END MODULES ##
 
 ## MAIN ##
+
+#~API DEFINES~#
+if [ $1 = getdbsver ]
+then
+	echo $DBSVER
+	exit 0
+fi
+if [ $1 = debug ]
+then
+	echo "Dissonant Build System version $DBSVER"
+	echo ""
+	echo "Entering debug mode..."
+	sleep 2s
+	echo "Debug mode not available on this version."
+	exit 0
+fi
+if [ $1 = "conf.threads.avail" ]
+then
+	source "$HOME/dsnt-tree/dbs.conf"
+	echo $THREADS
+	exit 0
+fi
+if [ $1 = "conf.logging.enabled" ]
+then
+	source "$HOME/dsnt-tree/dbs.conf"
+	echo $LOGGING
+	exit 0
+fi
+#~END API DEFINES~#
 
 dbsstart
 dbsmain
