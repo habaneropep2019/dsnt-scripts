@@ -252,7 +252,7 @@ function dupdatemenu {
 			whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Installing Update<<" --msgbox "Please restart DBS." 7 35
 			popd > /dev/null
 			touch "$HOME/dsnt-tree/.update"
-			exit 0
+			dexit 0
 			;;
 		Tree)
 			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --infobox "Checking for available builds..." 7 35
