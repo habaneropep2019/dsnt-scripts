@@ -146,10 +146,11 @@ function dnewmenu {
 		for f in *.define; do echo "\"$f\" \"$f\"\\"; done
 		)
 		popd > /dev/null
-	dnewmenuout=$(
+	dnewmenuoutt=$(
 		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title "Select build ID" --menu "Choose a build ID for your project" 25 78 16 \
 		$menubuildtwo 3>&2 2>&1 1>&3
 	)
+	dnewmenuout=$(echo "$dnewmenoutt" | tr -d \" | sed -r 's/(.define)*$//')
 	CHOICE=$?
 	if [ $CHOICE = 1 ]
 	then
@@ -200,6 +201,7 @@ function dnewmenu {
 	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Copying" --infobox "Copying files..." 7 30
 	pushd "$HOME/dsnt-working/$dprojectname" > /dev/null
 	cp "$HOME/dsnt-tree/$dnewmenuout/strap.sh" scripts/ > /dev/null
+	chmod +x scripts/strap.sh
 	popd > /dev/null
 	sleep 2s
 	dbsmain
@@ -208,7 +210,7 @@ function dnewmenu {
 function dconfigmenu {
 	if [ ! -f "$HOME/dsnt-tree/dbs.conf" ]
 	then
-		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>WARNING<<" --infobox "No configuration found, creating..." 7 35
+		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "WARNING" --infobox "No configuration found, creating..." 7 35
 		sleep 2s
 		touch "$HOME/dsnt-tree/dbs.conf"
 		echo "#This is the Dissonant Build System configuration file. Most values expect a binary value, AKA" "$HOME/dsnt-tree/dbs.conf" >> "$HOME/dsnt-tree/dbs.conf"
@@ -218,21 +220,21 @@ function dconfigmenu {
 		echo "THREADS=1" >> "$HOME/dsnt-tree/dbs.conf"
 		echo "LOGGING=0" >> "$HOME/dsnt-tree/dbs.conf"
 	fi
-	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Current Configuration<<" --yesno "Below you will find the current configuration.\n\nIf this is satisfactory, you can select \"No\" to go back to the main menu.\nOtherwise, select \"Yes\" to edit the configuration.\n\n\n`cat $HOME/dsnt-tree/dbs.conf`" 25 80
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "Current Configuration" --yesno "Below you will find the current configuration.\n\nIf this is satisfactory, you can select \"No\" to go back to the main menu.\nOtherwise, select \"Yes\" to edit the configuration.\n\n\n`cat $HOME/dsnt-tree/dbs.conf`" 25 80
 	CHOICE=$?
 	if [ $CHOICE = 1 ]
 	then
 		dbsmain
 	fi
-	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Logging<<" --yesno "Enable logging?" 7 20
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "Logging" --yesno "Enable logging?" 7 20
 	DBSCONFIGLOGGING=$?
-	DBSCONFIGTHREADS=$(whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>CPU Threads<<" --inputbox "How many CPU threads do you want the build system to utilize?\nMore threads enables faster compiling.\n\nIf your processor supports hyperthreading, you can use two threads per core. For example, if you have a dual-core CPU that supports hyperthreading, you can enable up to four threads. If you intend to use your computer while the build is running, it is recommended to only enable half of the available threads.\n\nIt is important to note that not all packages can compile with multiple threads, so setting this option does not force the use of parallel compilation.\n\nThe value of this option must be a numerical value, with a minimum of 1.\n\nTo return to the main menu, choose Cancel\n\n\n\n" 25 100 3>&1 1>&2 2>&3)
+	DBSCONFIGTHREADS=$(whiptail --backtitle "Dissonant Build System $DBSVER" --title "CPU Threads" --inputbox "How many CPU threads do you want the build system to utilize?\nMore threads enables faster compiling.\n\nIf your processor supports hyperthreading, you can use two threads per core. For example, if you have a dual-core CPU that supports hyperthreading, you can enable up to four threads. If you intend to use your computer while the build is running, it is recommended to only enable half of the available threads.\n\nIt is important to note that not all packages can compile with multiple threads, so setting this option does not force the use of parallel compilation.\n\nThe value of this option must be a numerical value, with a minimum of 1.\n\nTo return to the main menu, choose Cancel\n\n\n\n" 25 100 3>&1 1>&2 2>&3)
 	CHOICE=$?
 	if [ $CHOICE = 1 ]
 	then
 		dbsmain
 	fi
-	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Updating configuration<<" --infobox "Updating configuration, please wait..." 7 45
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Updating configuration" --infobox "Updating configuration, please wait..." 7 45
 	rm "$HOME/dsnt-tree/dbs.conf.old" > /dev/null
 	mv "$HOME/dsnt-tree/dbs.conf" "$HOME/dsnt-tree/dbs.conf.old"
 	touch "$HOME/dsnt-tree/dbs.conf"
@@ -251,7 +253,7 @@ function dconfigmenu {
 function dupdatemenu {
 	if [ ! -d "$HOME/dsnt-tree" ]
 	then
-		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>WARNING<<" --infobox "No tree directory, creating..." 7 35
+		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "WARNING" --infobox "No tree directory, creating..." 7 35
 		sleep 2s
 		pushd $HOME > /dev/null
 			mkdir dsnt-tree > /dev/null
@@ -260,7 +262,7 @@ function dupdatemenu {
 		popd > /dev/null
 	fi
 	dupdatemenuout=$(
-		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title ">>Select type<<" --menu "Choose an online update type" 25 78 16 \
+		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title "Select type" --menu "Choose an online update type" 25 78 16 \
 		"DBS" "Update DBS (this program)" \
 		"Tree" "Update the build ID manifest" 3>&2 2>&1 1>&3
 	)
@@ -271,16 +273,16 @@ function dupdatemenu {
 	fi
 	case $dupdatemenuout in
 		DBS)
-			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --infobox "Checking available versions..." 7 35
+			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --infobox "Checking available versions..." 7 35
 			pushd "/tmp/dbs.$$" > /dev/null
 			wget http://dsntos.services/pub/dev/release-stable/dbs/current.manifest
 			if [ $DBSVER = `cat current.manifest` ]
 			then
-				whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --msgbox "DBS is up to date." 7 26
+				whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --msgbox "DBS is up to date." 7 26
 				rm current.manifest > /dev/null
 				dupdatemenu
 			fi
-			whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --yesno "There is a new version of DBS available.\n\nHit Yes to update, No to return to the update menu." 10 50
+			whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --yesno "There is a new version of DBS available.\n\nHit Yes to update, No to return to the update menu." 10 50
 			CHOICE=$?
 			if [ $CHOICE = 1 ]
 			then
@@ -288,7 +290,7 @@ function dupdatemenu {
 				dbsmain
 				popd
 			fi
-			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Fetching Update<<" --infobox "Fetching update..." 7 35
+			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Fetching Update" --infobox "Fetching update..." 7 35
 			wget http://dsntos.services/pub/dev/release-stable/dbs/`cat current.manifest`/dbs.sh > /dev/null
 			if [ ! -a "$HOME/dsnt-tree/COPYING.BSD3" ]
 				then
@@ -296,25 +298,25 @@ function dupdatemenu {
 					mv COPYING.BSD3 "$HOME/dsnt-tree/" > /dev/null
 			fi
 			sleep 1s
-			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Installing Update<<" --infobox "Installing update..." 7 35
+			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Installing Update" --infobox "Installing update..." 7 35
 			sleep 1s
 			rm "$HOME/dsnt-tree/bin/dbs.sh" > /dev/null
 			cp dbs.sh "$HOME/dsnt-tree/bin/" > /dev/null
 			chmod +x "$HOME/dsnt-tree/bin/dbs.sh" > /dev/null
 			sleep 1s
-			whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Installing Update<<" --msgbox "Please restart DBS." 7 35
+			whiptail --backtitle "Dissonant Build System $DBSVER" --title "Installing Update" --msgbox "Please restart DBS." 7 35
 			popd > /dev/null
 			touch "$HOME/dsnt-tree/.update"
 			dexit 0
 			;;
 		Tree)
-			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --infobox "Checking for available builds..." 7 35
+			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --infobox "Checking for available builds..." 7 35
 			mkdir /tmp/dbs.$$
 			pushd "/tmp/dbs.$$" > /dev/null
 			wget http://dsntos.services/pub/dev/builds/current.manifest
 			if [ ! -f "$HOME/dsnt-tree/current.manifest" ]
 			then
-				TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --infobox "No manifest present, getting latest..." 7 45
+				TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --infobox "No manifest present, getting latest..." 7 45
 				mkdir "$HOME/dsnt-tree/build.manifests" > /dev/null
 				mv current.manifest "$HOME/dsnt-tree/" > /dev/null
 				wget http://dsntos.services/pub/dev/builds/`cat "$HOME/dsnt-tree/current.manifest"`-defines.tar.gz
@@ -322,15 +324,15 @@ function dupdatemenu {
 				cp -R manifests/*.define "$HOME/dsnt-tree/build.manifests/"
 				rm -rv manifests > /dev/null
 				rm *.tar.gz > /dev/null
-				whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --msgbox "Installed builds manifest..." 7 45
+				whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --msgbox "Installed builds manifest..." 7 45
 				dupdatemenu
 			fi
 			if [ `cat $HOME/dsnt-tree/current.manifest` = `cat current.manifest` ]
 			then
-				whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --msgbox "Available builds manifest is current" 7 45
+				whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --msgbox "Available builds manifest is current" 7 45
 				dbsmain
 			else
-			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Installing update<<" --infobox "Installing new builds manifest..." 7 45
+			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Installing update" --infobox "Installing new builds manifest..." 7 45
 			rm "$HOME/dsnt-tree/current.manifest"
 			mv current.manifest "$HOME/dsnt-tree/" > /dev/null
 			wget http://dsntos.services/pub/dev/builds/`cat "$HOME/dsnt-tree/current.manifest"`-defines.tar.gz
@@ -339,7 +341,7 @@ function dupdatemenu {
 			cp -R manifests/*.define "$HOME/dsnt-tree/build.manifests/"
 			rm -rv manifests > /dev/null
 			rm *.tar.gz > /dev/null
-			whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --msgbox "Available builds updated..." 7 45
+			whiptail --backtitle "Dissonant Build System $DBSVER" --title "Online Update" --msgbox "Available builds updated..." 7 45
 			popd
 			dupdatemenu
 			fi
@@ -349,10 +351,10 @@ function dupdatemenu {
 
 
 function dclonetreemenu {
-	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Info<<" --msgbox "This menu allows you to clone the source tree for a selected Dissonant Build ID.\n\nPlease note, to ensure that you have the latest build ID list, you will need to use the Update option from the main menu. Then you can choose to update the build ID manifest." 15 100
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "Info" --msgbox "This menu allows you to clone the source tree for a selected Dissonant Build ID.\n\nPlease note, to ensure that you have the latest build ID list, you will need to use the Update option from the main menu. Then you can choose to update the build ID manifest." 15 100
 	if [ ! -d "$HOME/dsnt-tree" ]
 	then
-		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Tree not found<<" --infobox "The Dissonant tree directory was not found. Creating now..." 8 40
+		TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Tree not found" --infobox "The Dissonant tree directory was not found. Creating now..." 8 40
 		pushd "$HOME" > /dev/null
 		mkdir dsnt-tree > /dev/null
 		popd > /dev/null
@@ -360,7 +362,7 @@ function dclonetreemenu {
 	fi
 	if [ ! -d "$HOME/dsnt-tree/build.manifests" ]
 	then
-		whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Tree manifest not found<<" --msgbox "A tree manifest was not found. Please update or create the tree through the main menu." 8 40
+		whiptail --backtitle "Dissonant Build System $DBSVER" --title "Tree manifest not found" --msgbox "A tree manifest was not found. Please update or create the tree through the main menu." 8 40
 		dbsmain
 	fi
 	pushd "$HOME/dsnt-tree/build.manifests" > /dev/null
@@ -369,7 +371,7 @@ function dclonetreemenu {
 		)
 		popd > /dev/null
 	dclonetreemenuout=$(
-		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title ">>Select build ID<<" --menu "Choose a build ID to clone" 25 78 16 \
+		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title "Select build ID" --menu "Choose a build ID to clone" 25 78 16 \
 		$menubuildthree 3>&2 2>&1 1>&3
 	)
 	CHOICE=$?
@@ -380,7 +382,7 @@ function dclonetreemenu {
 	# Fix for .define appendage
 	DCURRENTBUILDIDB=$(echo $dclonetreemenuout | tr -d \")
 	DCURRENTBUILDID=$(echo $DCURRENTBUILDIDB | sed -r 's/(.define)+$//')
-whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Build Information<<" --yesno "This screen presents information on the selected build ID.\n\nIf you wish to choose a different build, choose No.\nOtherwise, choose Yes.\n\n\n`head -5 $HOME/dsnt-tree/build.manifests/$DCURRENTBUILDID.define`" 25 100
+whiptail --backtitle "Dissonant Build System $DBSVER" --title "Build Information" --yesno "This screen presents information on the selected build ID.\n\nIf you wish to choose a different build, choose No.\nOtherwise, choose Yes.\n\n\n`head -5 $HOME/dsnt-tree/build.manifests/$DCURRENTBUILDID.define`" 25 100
 	CHOICE=$?
 	if [ $CHOICE = 1 ]
 	then
@@ -388,21 +390,21 @@ whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Build Informati
 	fi
 	if [ -d "$HOME/dsnt-tree/$DCURRENTBUILDID" ]
 	then
-		whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>ERROR<<" --msgbox "It appears this build has already been downloaded.\n\nIf you need to download it again, you will need to manually remove the build IDs directory in the tree." 10 75
+		whiptail --backtitle "Dissonant Build System $DBSVER" --title "ERROR" --msgbox "It appears this build has already been downloaded.\n\nIf you need to download it again, you will need to manually remove the build IDs directory in the tree." 10 75
 		dclonetreemenu
 	fi
 	
-	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Fetching source tree<<" --infobox "Fetching tree in 5 seconds..." 7 45
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Fetching source tree" --infobox "Fetching tree in 5 seconds..." 7 45
 	sleep 5s
 	mkdir "$HOME/dsnt-tree/$DCURRENTBUILDID" > /dev/null
 	pushd "$HOME/dsnt-tree/$DCURRENTBUILDID" > /dev/null
 	# Now the actual download command
 	sed -n '/SOURCE.BASE.TARBALLS.BEGIN/,/SOURCE.BASE.TARBALLS.END/p' $HOME/dsnt-tree/build.manifests/$DCURRENTBUILDID.define | sed '1d; $d' | awk '{print "http://dsntos.services/pub/src/"$0}' | wget -i -
 	popd > /dev/null
-	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Complete<<" --msgbox "Tree downloaded." 8 20
-	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Verifying<<" --infobox "Verifying checksums..." 7 45
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "Complete" --msgbox "Tree downloaded." 8 20
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Verifying" --infobox "Verifying checksums..." 7 45
 	pushd "$HOME/dsnt-tree/$DCURRENTBUILDID" > /dev/null
-	sed -n '/SOURCE.BASE.TARBALLS.SHA256SUMS.BEGIN/,/SOURCE.BASE.TARBALLS.SHA256SUMS.END/p' $HOME/dsnt-tree/build.manifests/$DCURRENTBUILDID.define | sed '1d; $d' | sha256sum -
+	sed -n '/SOURCE.BASE.TARBALLS.SHA256SUMS.BEGIN/,/SOURCE.BASE.TARBALLS.SHA256SUMS.END/p' $HOME/dsnt-tree/build.manifests/$DCURRENTBUILDID.define | sed '1d; $d' | sha256sum -c -
 	popd > /dev/null
 	sleep 15s
 	dclonetreemenu
@@ -412,11 +414,11 @@ function dbsmain {
 	clear
 	if [ -a "$HOME/dsnt-tree/.update" ]
 	then
-		whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Info<<" --msgbox " The Dissonant Build System has been updated successfully." 10 40
+		whiptail --backtitle "Dissonant Build System $DBSVER" --title "Info" --msgbox " The Dissonant Build System has been updated successfully." 10 40
 		rm "$HOME/dsnt-tree/.update" > /dev/null
 	fi
 	dbsmenuout=$(
-	whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title ">>Main Menu<<" --menu "Choose an action" 25 78 16 \
+	whiptail --nocancel --notags --backtitle "Dissonant Build System $DBSVER" --title "Main Menu" --menu "Choose an action" 25 78 16 \
 	"About" "About Dissonant Build System" \
 	"Select" "Select current build project" \
 	"New" "Start a new build project" \

@@ -14,5 +14,4 @@ Different licenses may be used in this repository, and some pieces may be multi-
 
 - BSD 3-clause license (BSD3)
 - Dissonant Documentation Freedom License version 1 (DDFL1)
-- Dissonant Software Freedom License version 1 (DSFL1)
 - GNU General Public License version 3 (GPL3)
