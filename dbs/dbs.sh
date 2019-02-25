@@ -129,20 +129,25 @@ function dselectmenu {
 }
 
 function dnewmenu {
-	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>New Project<<" --msgbox "This wizard will guide you through starting a new project. You will need to choose a Dissonant Build ID to work with. If you do not have a tree currently cloned for that build ID, you will be prompted to clone the tree.\n\nPlease note that you can have multiple projects for the same build ID." 13 100
-	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Loading<<" --infobox "Loading available build IDs, please wait..." 7 49
-	if [ ! -d "$HOME/dsnt-tree/builds" ]
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "New Project" --msgbox "This wizard will guide you through starting a new project. You will need to choose a Dissonant Build ID to work with. If you do not have a tree currently cloned for that build ID, you will be prompted to clone the tree.\n\nPlease note that you can have multiple projects for the same build ID." 13 100
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Loading" --infobox "Loading available build IDs, please wait..." 7 49
+	if [ ! -d "$HOME/dsnt-tree/build.manifests" ]
 	then
-	whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Error<<" --msgbox "ERROR: No builds found in tree. \nPlease clone at least one build tree first" 8 40
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "Error" --msgbox "ERROR: No builds found in tree. \nPlease clone at least one build tree first" 8 40
 		dbsmain
 	fi
-	pushd "$HOME/dsnt-tree/builds" > /dev/null
+	if [ ! -d "$HOME/dsnt-working/builds" ]
+	then
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Warning" --infobox "WARNING: No build directory found. \nCreating..." 8 40
+	mkdir "$HOME/dsnt-working/builds" > /dev/null
+	fi
+	pushd "$HOME/dsnt-tree/build.manifests" > /dev/null
 		menubuildtwo=$(
 		for f in *.define; do echo "\"$f\" \"$f\"\\"; done
 		)
 		popd > /dev/null
 	dnewmenuout=$(
-		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title ">>Select build ID<<" --menu "Choose a build ID for your project" 25 78 16 \
+		whiptail --notags --backtitle "Dissonant Build System $DBSVER" --title "Select build ID" --menu "Choose a build ID for your project" 25 78 16 \
 		$menubuildtwo 3>&2 2>&1 1>&3
 	)
 	CHOICE=$?
@@ -150,6 +155,54 @@ function dnewmenu {
 	then
 		dbsmain
 	fi
+	# Name the project
+	dprojectname=$(
+	whiptail --backtitle "Dissonant Build System $DBSVER" --title "Name project" --inputbox "Enter a name for your project.\nIt cannot contain spaces or special characters, and is case-sensitive.\n\nAllowed characters are 0-9, a-z, and A-Z.\n\nThis version of DBS does not sanitize this form, so BE SURE you've verified it meets the requirements.\n\n" 15 75 3>&1 1>&2 2>&3
+	)
+	CHOICE=$?
+	if [ $CHOICE = 1 ]
+	then
+		dbsmain
+	fi
+	if [ -d "$HOME/dsnt-working/builds/$dprojectname"]
+	then
+		whiptail --backtitle "Dissonant Build System $DBSVER" --title "ERROR" --msgbox "Project name already in use" 7 35
+		dnewmenu
+	fi
+	dprojectarch=$(
+	whiptail --nocancel --notags --backtitle "Dissonant Build System $DBSVER" --title "Select Target Architecture" --radiolist \
+	"Choose an architecure. \n\nDBS does not support cross-compiling right now, so it must match your host system." 20 78 6 \
+	"i386" "Intel 80386 (32-bit)" ON \
+	"i486" "Intel 80486 (32-bit)" OFF \
+	"i686" "Intel 80686 (32-bit)" OFF \
+	"x86_64" "AMD/Intel x86 (64-bit)" OFF \
+	"armhf" "ARM hardware-float (64-bit)" OFF 3>&1 1>&2 2>&3
+	)
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Creating project" --infobox "Generating project, please wait..." 7 45
+	sleep 1s
+	touch "$HOME/dsnt-working/projects/$dprojectname.define"
+	echo "# This file configures this DBS project" >> "$HOME/dsnt-working/projects/$dprojectname.define"
+	echo "" >> "$HOME/dsnt-working/projects/$dprojectname.define"
+	echo "PRJBUILDID=$dnewmenuout" >> "$HOME/dsnt-working/projects/$dprojectname.define"
+	echo "PRJNAME=$dprojectname" >> "$HOME/dsnt-working/projects/$dprojectname.define"
+	echo "PRJARCH=$dprojectarch" >> "$HOME/dsnt-working/projects/$dprojectname.define"
+	echo "PRJNEWDATE=`date +%Y%m%d_%H%M%S%Z`" >> "$HOME/dsnt-working/projects/$dprojectname.define"
+	pushd "$HOME/dsnt-working" > /dev/null
+	mkdir "$dprojectname" > /dev/null
+	popd > /dev/null
+	pushd "$HOME/dsnt-working/$dprojectname" > /dev/null
+	mkdir sources > /dev/null
+	mkdir scripts > /dev/null
+	mkdir tempchain > /dev/null
+	popd > /dev/null
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Success" --infobox "Project created" 7 22
+	sleep 2s
+	TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title "Copying" --infobox "Copying files..." 7 30
+	pushd "$HOME/dsnt-working/$dprojectname" > /dev/null
+	cp "$HOME/dsnt-tree/$dnewmenuout/strap.sh" scripts/ > /dev/null
+	popd > /dev/null
+	sleep 2s
+	dbsmain
 }
 
 function dconfigmenu {
