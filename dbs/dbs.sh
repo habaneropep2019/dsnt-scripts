@@ -272,7 +272,7 @@ function dupdatemenu {
 	case $dupdatemenuout in
 		DBS)
 			TERM=ansi whiptail --backtitle "Dissonant Build System $DBSVER" --title ">>Online Update<<" --infobox "Checking available versions..." 7 35
-			pushd "$HOME/dsnt-tree/tmp" > /dev/null
+			pushd "/tmp/dbs.$$" > /dev/null
 			wget http://dsntos.services/pub/dev/release-stable/dbs/current.manifest
 			if [ $DBSVER = `cat current.manifest` ]
 			then
